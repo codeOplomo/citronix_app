@@ -53,5 +53,20 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleMaximumFieldsExceededException(FarmMaximumFieldsException ex) {
         return ResponseEntity.badRequest().body(ex.getMessage());
     }
+
+    @ExceptionHandler(TreeDensityExceededException.class)
+    public ResponseEntity<String> handleTreeDensityExceededException(TreeDensityExceededException ex) {
+        return ResponseEntity.badRequest().body(ex.getMessage());
+    }
+
+    @ExceptionHandler(InvalidPlantingPeriodException.class)
+    public ResponseEntity<String> handleInvalidPlantingPeriodException(InvalidPlantingPeriodException ex) {
+        return ResponseEntity.badRequest().body(ex.getMessage());
+    }
+
+    @ExceptionHandler(FieldNotFoundException.class)
+    public ResponseEntity<String> handleFieldNotFoundException(FieldNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+    }
 }
 
