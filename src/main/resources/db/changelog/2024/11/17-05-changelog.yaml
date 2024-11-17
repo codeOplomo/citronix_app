@@ -1,0 +1,46 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1731830920
+      author: epshiro
+      changes:
+        - createTable:
+            tableName: sales
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: pk_sale
+              - column:
+                  name: date
+                  type: DATE
+                  constraints:
+                    nullable: false
+              - column:
+                  name: unit_price
+                  type: DOUBLE
+                  constraints:
+                    nullable: false
+              - column:
+                  name: client
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: revenue
+                  type: DOUBLE
+                  constraints:
+                    nullable: false
+              - column:
+                  name: harvest_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+        - addForeignKeyConstraint:
+            baseTableName: sales
+            baseColumnNames: harvest_id
+            referencedTableName: harvests
+            referencedColumnNames: id
+            constraintName: fk_sale_harvest

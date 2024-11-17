@@ -1,0 +1,31 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1731830920
+      author: epshiro
+      changes:
+        - createTable:
+            tableName: trees
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: pk_tree
+              - column:
+                  name: planting_date
+                  type: DATE
+                  constraints:
+                    nullable: false
+              - column:
+                  name: field_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+        - addForeignKeyConstraint:
+            baseTableName: trees
+            baseColumnNames: field_id
+            referencedTableName: fields
+            referencedColumnNames: id
+            constraintName: fk_tree_field

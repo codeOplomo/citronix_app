@@ -1,0 +1,31 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1731830920
+      author: epshiro
+      changes:
+        - createTable:
+            tableName: fields
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: pk_field
+              - column:
+                  name: area
+                  type: DOUBLE
+                  constraints:
+                    nullable: false
+              - column:
+                  name: farm_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+        - addForeignKeyConstraint:
+            baseTableName: fields
+            baseColumnNames: farm_id
+            referencedTableName: farms
+            referencedColumnNames: id
+            constraintName: fk_field_farm

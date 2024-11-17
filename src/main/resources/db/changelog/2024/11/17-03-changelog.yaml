@@ -1,0 +1,30 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1731830920
+      author: epshiro
+      changes:
+        - createTable:
+            tableName: harvests
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: pk_harvest
+              - column:
+                  name: season
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: harvest_date
+                  type: DATE
+                  constraints:
+                    nullable: false
+              - column:
+                  name: total_quantity
+                  type: DOUBLE
+                  constraints:
+                    nullable: false

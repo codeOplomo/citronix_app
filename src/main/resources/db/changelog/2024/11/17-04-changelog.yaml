@@ -1,0 +1,42 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1731830920
+      author: epshiro
+      changes:
+        - createTable:
+            tableName: harvest_detail
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: pk_harvest_detail
+              - column:
+                  name: quantity
+                  type: DOUBLE
+                  constraints:
+                    nullable: false
+              - column:
+                  name: tree_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+              - column:
+                  name: harvest_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+        - addForeignKeyConstraint:
+            baseTableName: harvest_detail
+            baseColumnNames: tree_id
+            referencedTableName: trees
+            referencedColumnNames: id
+            constraintName: fk_harvest_detail_tree
+        - addForeignKeyConstraint:
+            baseTableName: harvest_detail
+            baseColumnNames: harvest_id
+            referencedTableName: harvests
+            referencedColumnNames: id
+            constraintName: fk_harvest_detail_harvest
