@@ -1,12 +1,17 @@
 package org.anas.citronix.service.implementation;
 
 import jakarta.persistence.EntityManager;
+import jakarta.transaction.Transactional;
 import org.anas.citronix.domain.Farm;
+import org.anas.citronix.domain.Field;
+import org.anas.citronix.exceptions.FarmMaximumFieldsException;
 import org.anas.citronix.exceptions.FarmNotFoundException;
 import org.anas.citronix.exceptions.NullFarmException;
 import org.anas.citronix.repository.FarmRepository;
 import org.anas.citronix.service.FarmService;
+import org.anas.citronix.service.FieldService;
 import org.anas.citronix.service.dto.FarmDTO;
+import org.anas.citronix.service.dto.FieldDTO;
 import org.anas.citronix.service.dto.mapper.FarmMapper;
 import org.springframework.stereotype.Service;
 
@@ -20,10 +25,12 @@ public class FarmServiceImpl implements FarmService {
     private final FarmRepository farmRepository;
     private final FarmMapper farmMapper;
     private final EntityManager entityManager;
+    private final FieldService fieldService;
 
-    public FarmServiceImpl(FarmRepository farmRepository, FarmMapper farmMapper, EntityManager entityManager) {
+    public FarmServiceImpl(FarmRepository farmRepository, FarmMapper farmMapper, FieldService fieldService, EntityManager entityManager) {
         this.farmRepository = farmRepository;
         this.farmMapper = farmMapper;
+        this.fieldService = fieldService;
         this.entityManager = entityManager;
     }
 
@@ -91,6 +98,29 @@ public class FarmServiceImpl implements FarmService {
 
         List<Farm> farms = farmRepository.searchFarms(name, location, entityManager);
         return farms.stream().map(farmMapper::toDTO).collect(Collectors.toList());
+    }
+
+    @Override
+    public FarmDTO addFieldToFarm(UUID farmId, FieldDTO fieldDTO) {
+        Farm farm = farmRepository.findById(farmId)
+                .orElseThrow(() -> new FarmNotFoundException("Farm with ID " + farmId + " not found"));
+
+        // Check farm constraints before adding field
+        if (farm.getFields().size() >= 10) {
+            throw new FarmMaximumFieldsException("A farm cannot have more than 10 fields");
+        }
+
+        double currentFieldAreaSum = farm.getFields().stream()
+                .mapToDouble(Field::getArea)
+                .sum();
+
+        if (!farm.isValidArea(currentFieldAreaSum + fieldDTO.getArea())) {
+            throw new FarmMaximumFieldsException("The sum of the field areas exceeds the farm's total area");
+        }
+
+        fieldService.assignField(fieldDTO, farm);
+
+        return farmMapper.toDTO(farm);
     }
 
 

@@ -4,6 +4,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
 
 import java.time.LocalDate;
+import java.util.List;
 
 public class FarmDTO {
     @NotBlank(message = "Name is mandatory")
@@ -16,6 +17,8 @@ public class FarmDTO {
     private double area;
 
     private LocalDate creationDate;
+
+    private List<FieldDTO> fields;
 
     // Getters and Setters
     public String getName() {
@@ -48,6 +51,14 @@ public class FarmDTO {
 
     public void setCreationDate(LocalDate creationDate) {
         this.creationDate = creationDate;
+    }
+
+    public List<FieldDTO> getFields() {
+        return fields;
+    }
+
+    public void setFields(List<FieldDTO> fields) {
+        this.fields = fields;
     }
 }
 

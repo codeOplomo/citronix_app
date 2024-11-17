@@ -3,6 +3,8 @@ package org.anas.citronix.domain;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -23,6 +25,10 @@ public class Farm {
 
     @Column(nullable = false)
     private java.time.LocalDate creationDate;
+
+    @OneToMany(mappedBy = "farm", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Field> fields = new ArrayList<>();
+
 
     public Farm() {
     }
@@ -70,5 +76,13 @@ public class Farm {
 
     public void setCreationDate(LocalDate creationDate) {
         this.creationDate = creationDate;
+    }
+
+    public List<Field> getFields() {
+        return fields;
+    }
+
+    public void setFields(List<Field> fields) {
+        this.fields = fields;
     }
 }
