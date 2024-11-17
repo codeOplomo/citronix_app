@@ -2,6 +2,7 @@ package org.anas.citronix.service;
 
 import org.anas.citronix.domain.Farm;
 import org.anas.citronix.service.dto.FarmDTO;
+import org.anas.citronix.service.dto.FieldDTO;
 
 import java.util.List;
 import java.util.UUID;
@@ -17,5 +18,7 @@ public interface FarmService {
     List<FarmDTO> getAllFarms();
 
     List<FarmDTO> searchFarms(String name, String location);
+
+    FarmDTO addFieldToFarm(UUID farmId, FieldDTO fieldDTO);
 }
 

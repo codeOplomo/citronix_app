@@ -3,6 +3,7 @@ package org.anas.citronix.web.api;
 import jakarta.validation.Valid;
 import org.anas.citronix.service.FarmService;
 import org.anas.citronix.service.dto.FarmDTO;
+import org.anas.citronix.service.dto.FieldDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -55,6 +56,12 @@ public class FarmController {
 
         List<FarmDTO> farms = farmService.searchFarms(name, location);
         return ResponseEntity.ok(farms);
+    }
+
+    @PostMapping("/{farmId}/fields")
+    public ResponseEntity<FarmDTO> addFieldToFarm(@PathVariable UUID farmId, @Valid @RequestBody FieldDTO fieldDTO) {
+        FarmDTO updatedFarmDTO = farmService.addFieldToFarm(farmId, fieldDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body(updatedFarmDTO);
     }
 }
 
