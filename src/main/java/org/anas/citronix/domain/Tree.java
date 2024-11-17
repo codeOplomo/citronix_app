@@ -1,6 +1,7 @@
 package org.anas.citronix.domain;
 
 import jakarta.persistence.*;
+import org.anas.citronix.exceptions.InvalidPlantingPeriodException;
 
 import java.time.LocalDate;
 import java.time.Period;
@@ -30,6 +31,16 @@ public class Tree {
         else if (age <= 10) return 12.0;
         else if (age <= 20) return 20.0;
         else return 0.0;
+    }
+
+    public static void validatePlantingPeriod(LocalDate plantingDate) {
+        if (plantingDate.getMonthValue() < 3 || plantingDate.getMonthValue() > 5) {
+            throw new InvalidPlantingPeriodException("Trees can only be planted between March and May.");
+        }
+    }
+
+    public void validate() {
+        validatePlantingPeriod(this.plantingDate);
     }
 
     public UUID getId() {

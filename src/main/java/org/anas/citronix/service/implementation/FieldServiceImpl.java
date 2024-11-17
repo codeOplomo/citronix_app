@@ -14,6 +14,7 @@ import org.anas.citronix.service.dto.mapper.FieldMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -21,12 +22,10 @@ public class FieldServiceImpl implements FieldService {
 
     private final FieldRepository fieldRepository;
     private final FieldMapper fieldMapper;
-    private final EntityManager entityManager;
 
-    public FieldServiceImpl(FieldRepository fieldRepository, FieldMapper fieldMapper, EntityManager entityManager) {
+    public FieldServiceImpl(FieldRepository fieldRepository, FieldMapper fieldMapper) {
         this.fieldRepository = fieldRepository;
         this.fieldMapper = fieldMapper;
-        this.entityManager = entityManager;
     }
 
     @Override
@@ -50,7 +49,10 @@ public class FieldServiceImpl implements FieldService {
         return fieldMapper.toDTO(savedField);
     }
 
-
+    @Override
+    public Optional<Field> findById(UUID fieldId) {
+        return fieldRepository.findById(fieldId);
+    }
 
 
 }
