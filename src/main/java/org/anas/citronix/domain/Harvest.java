@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import org.anas.citronix.domain.enums.Season;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -22,6 +24,37 @@ public class Harvest {
 
     @Column(nullable = false)
     private double totalQuantity;
+
+    @OneToMany(mappedBy = "harvest")
+    private List<HarvestDetail> details = new ArrayList<>();
+
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "field_id", nullable = false)
+    private Field field;
+
+    public Harvest() {
+    }
+
+    public double calculateTotalQuantity() {
+        return details.stream().mapToDouble(HarvestDetail::getQuantity).sum();
+    }
+
+    public void updateTotalQuantity() {
+        this.totalQuantity = calculateTotalQuantity();
+    }
+
+    // Add helper methods for managing details
+    public void addDetail(HarvestDetail detail) {
+        details.add(detail);
+        detail.setHarvest(this);
+        updateTotalQuantity();
+    }
+
+    public void removeDetail(HarvestDetail detail) {
+        details.remove(detail);
+        detail.setHarvest(null);
+        updateTotalQuantity();
+    }
 
     public UUID getId() {
         return id;
@@ -53,5 +86,21 @@ public class Harvest {
 
     public void setTotalQuantity(double totalQuantity) {
         this.totalQuantity = totalQuantity;
+    }
+
+    public List<HarvestDetail> getDetails() {
+        return details;
+    }
+
+    public void setDetails(List<HarvestDetail> details) {
+        this.details = details;
+    }
+
+    public Field getField() {
+        return field;
+    }
+
+    public void setField(Field field) {
+        this.field = field;
     }
 }

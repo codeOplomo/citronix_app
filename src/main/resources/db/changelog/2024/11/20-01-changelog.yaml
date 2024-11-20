@@ -1,0 +1,13 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1732092765
+      author: epshiro
+      changes:
+        - modifyDataType:
+            tableName: harvest_detail
+            columnName: harvest_id
+            newDataType: UUID
+        - dropNotNullConstraint:
+            tableName: harvest_detail
+            columnName: harvest_id
+            columnDataType: UUID

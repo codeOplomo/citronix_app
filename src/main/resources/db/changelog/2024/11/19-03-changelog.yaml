@@ -1,0 +1,13 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1732029772
+      author: epshiro
+      changes:
+        - modifyDataType:
+            tableName: fields
+            columnName: farm_id
+            newDataType: UUID
+        - dropNotNullConstraint:
+            tableName: fields
+            columnName: farm_id
+            columnDataType: UUID

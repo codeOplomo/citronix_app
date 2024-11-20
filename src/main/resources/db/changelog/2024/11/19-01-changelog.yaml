@@ -1,0 +1,19 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1732027237
+      author: epshiro
+      changes:
+        - addColumn:
+            tableName: harvests
+            columns:
+              - column:
+                  name: field_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+        - addForeignKeyConstraint:
+            baseTableName: harvests
+            baseColumnNames: field_id
+            referencedTableName: fields
+            referencedColumnNames: id
+            constraintName: fk_harvest_field

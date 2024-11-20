@@ -11,4 +11,6 @@ public interface FieldService {
     FieldDTO assignField(FieldDTO fieldDTO, Farm farm);
 
     Optional<Field> findById(UUID fieldId);
+
+    FieldDTO createField(FieldDTO fieldDTO);
 }

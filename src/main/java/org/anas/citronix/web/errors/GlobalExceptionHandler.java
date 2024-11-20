@@ -68,5 +68,20 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleFieldNotFoundException(FieldNotFoundException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
     }
+
+    @ExceptionHandler(TreeNotFoundException.class)
+    public ResponseEntity<String> handleTreeNotFoundException(TreeNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(HarvestAlreadyExistsException.class)
+    public ResponseEntity<String> handleHarvestAlreadyExistsException(HarvestAlreadyExistsException ex) {
+        return ResponseEntity.badRequest().body(ex.getMessage());
+    }
+
+    @ExceptionHandler(HarvestNotFoundException.class)
+    public ResponseEntity<String> handleHarvestNotFoundException(HarvestNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+    }
 }
 
