@@ -38,6 +38,13 @@ public class Farm {
         return fieldAreaSum < this.area;
     }
 
+    public double getFieldsAreaSum() {
+        return fields.stream()
+                .mapToDouble(Field::getArea)
+                .sum();
+    }
+
+
     public UUID getId() {
         return id;
     }

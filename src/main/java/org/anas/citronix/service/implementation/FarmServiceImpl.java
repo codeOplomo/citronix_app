@@ -13,8 +13,10 @@ import org.anas.citronix.service.FieldService;
 import org.anas.citronix.service.dto.FarmDTO;
 import org.anas.citronix.service.dto.FieldDTO;
 import org.anas.citronix.service.dto.mapper.FarmMapper;
+import org.anas.citronix.service.dto.mapper.FieldMapper;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -24,14 +26,39 @@ public class FarmServiceImpl implements FarmService {
 
     private final FarmRepository farmRepository;
     private final FarmMapper farmMapper;
+    private final FieldMapper fieldMapper;
     private final EntityManager entityManager;
     private final FieldService fieldService;
 
-    public FarmServiceImpl(FarmRepository farmRepository, FarmMapper farmMapper, FieldService fieldService, EntityManager entityManager) {
+    public FarmServiceImpl(FarmRepository farmRepository, FarmMapper farmMapper, FieldService fieldService, EntityManager entityManager, FieldMapper fieldMapper) {
         this.farmRepository = farmRepository;
         this.farmMapper = farmMapper;
+        this.fieldMapper = fieldMapper;
         this.fieldService = fieldService;
         this.entityManager = entityManager;
+    }
+
+
+    @Override
+    public FarmDTO addField(UUID farmId, FieldDTO fieldDTO) {
+        Farm farm = farmRepository.findById(farmId)
+                .orElseThrow(() -> new FarmNotFoundException("Farm with ID " + farmId + " not found"));
+
+        // Check farm constraints before adding field
+        if (farm.getFields().size() >= 10) {
+            throw new FarmMaximumFieldsException("A farm cannot have more than 10 fields");
+        }
+
+        double currentFieldAreaSum = farm.getFieldsAreaSum();
+
+
+        if (!farm.isValidArea(currentFieldAreaSum + fieldDTO.getArea())) {
+            throw new FarmMaximumFieldsException("The sum of the field areas exceeds the farm's total area");
+        }
+
+        fieldService.assignField(fieldDTO, farm);
+
+        return farmMapper.toDTO(farm);
     }
 
     @Override
@@ -39,13 +66,51 @@ public class FarmServiceImpl implements FarmService {
         if (farmDTO == null) {
             throw new NullFarmException("Farm cannot be null");
         }
-        Farm farm = farmMapper.toEntity(farmDTO);
 
+        // Convert DTO to entity
+        Farm farm = farmMapper.toEntity(farmDTO);
         farm.setCreationDate(java.time.LocalDate.now());
 
+        // Save farm first to generate an ID
         Farm savedFarm = farmRepository.save(farm);
+
+        // Handle provided fields
+        if (farmDTO.getFields() != null && !farmDTO.getFields().isEmpty()) {
+            List<Field> fields = new ArrayList<>();
+            double currentFieldAreaSum = 0.0;
+
+            // Iterate over fields to validate and prepare them
+            for (FieldDTO fieldDTO : farmDTO.getFields()) {
+                // Check if this field is already associated with a farm
+                if (fieldDTO.getFarmId() == null) { // This field isn't yet assigned
+                    currentFieldAreaSum += fieldDTO.getArea();
+                    if (!farm.isValidArea(currentFieldAreaSum)) {
+                        throw new FarmMaximumFieldsException("The sum of the field areas exceeds the farm's total area");
+                    }
+
+                    // Convert fieldDTO to entity and set farm reference
+                    Field field = fieldMapper.toEntity(fieldDTO);
+                    field.setFarm(savedFarm); // Set the farm relationship
+                    fields.add(field);
+                }
+            }
+
+            // Save the newly added fields
+            if (!fields.isEmpty()) {
+                fieldService.saveAll(fields);
+            }
+
+            // Update fields in the farm entity after saving
+            savedFarm.setFields(fields);
+        }
+
+        // Return the farm as a DTO
         return farmMapper.toDTO(savedFarm);
     }
+
+
+
+
 
     @Override
     public FarmDTO updateFarm(UUID id, FarmDTO farmDTO) {
@@ -98,29 +163,6 @@ public class FarmServiceImpl implements FarmService {
 
         List<Farm> farms = farmRepository.searchFarms(name, location, entityManager);
         return farms.stream().map(farmMapper::toDTO).collect(Collectors.toList());
-    }
-
-    @Override
-    public FarmDTO addField(UUID farmId, FieldDTO fieldDTO) {
-        Farm farm = farmRepository.findById(farmId)
-                .orElseThrow(() -> new FarmNotFoundException("Farm with ID " + farmId + " not found"));
-
-        // Check farm constraints before adding field
-        if (farm.getFields().size() >= 10) {
-            throw new FarmMaximumFieldsException("A farm cannot have more than 10 fields");
-        }
-
-        double currentFieldAreaSum = farm.getFields().stream()
-                .mapToDouble(Field::getArea)
-                .sum();
-
-        if (!farm.isValidArea(currentFieldAreaSum + fieldDTO.getArea())) {
-            throw new FarmMaximumFieldsException("The sum of the field areas exceeds the farm's total area");
-        }
-
-        fieldService.assignField(fieldDTO, farm);
-
-        return farmMapper.toDTO(farm);
     }
 
 

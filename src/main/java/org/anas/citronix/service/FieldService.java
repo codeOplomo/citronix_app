@@ -4,6 +4,7 @@ import org.anas.citronix.domain.Farm;
 import org.anas.citronix.domain.Field;
 import org.anas.citronix.service.dto.FieldDTO;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -13,4 +14,6 @@ public interface FieldService {
     Optional<Field> findById(UUID fieldId);
 
     FieldDTO createField(FieldDTO fieldDTO);
+
+    void saveAll(List<Field> fields);
 }

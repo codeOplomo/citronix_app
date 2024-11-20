@@ -2,6 +2,7 @@ package org.anas.citronix.service.dto.mapper;
 
 import org.anas.citronix.domain.Field;
 import org.anas.citronix.service.dto.FieldDTO;
+import org.anas.citronix.web.vm.FieldVM;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
@@ -11,4 +12,6 @@ public interface FieldMapper {
     Field toEntity(FieldDTO fieldDTO);
 
     FieldDTO toDTO(Field field);
+
+    FieldDTO toDTO(FieldVM fieldVM);
 }

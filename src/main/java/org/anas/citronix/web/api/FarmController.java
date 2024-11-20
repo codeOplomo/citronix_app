@@ -4,6 +4,10 @@ import jakarta.validation.Valid;
 import org.anas.citronix.service.FarmService;
 import org.anas.citronix.service.dto.FarmDTO;
 import org.anas.citronix.service.dto.FieldDTO;
+import org.anas.citronix.service.dto.mapper.FarmMapper;
+import org.anas.citronix.service.dto.mapper.FieldMapper;
+import org.anas.citronix.web.vm.FarmVM;
+import org.anas.citronix.web.vm.FieldVM;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,21 +20,37 @@ import java.util.UUID;
 public class FarmController {
 
     private final FarmService farmService;
+    private final FarmMapper farmMapper;
+    private final FieldMapper fieldMapper;
 
-    public FarmController(FarmService farmService) {
+    public FarmController(FarmService farmService, FarmMapper farmMapper, FieldMapper fieldMapper) {
         this.farmService = farmService;
+        this.farmMapper = farmMapper;
+        this.fieldMapper = fieldMapper;
     }
 
     // Create a new farm
     @PostMapping
-    public ResponseEntity<FarmDTO> createFarm(@Valid @RequestBody FarmDTO farmDTO) {
+    public ResponseEntity<FarmDTO> createFarm(@Valid @RequestBody FarmVM farmVM) {
+        FarmDTO farmDTO = farmMapper.toDTO(farmVM);
+
+        // Handle cases where fields are provided
+        if (farmVM.getFields() != null && !farmVM.getFields().isEmpty()) {
+            for (FieldVM fieldVM : farmVM.getFields()) {
+                FieldDTO fieldDTO = fieldMapper.toDTO(fieldVM);
+                farmDTO.getFields().add(fieldDTO);
+            }
+        }
+
         FarmDTO createdFarmDTO = farmService.createFarm(farmDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdFarmDTO);
     }
 
+
     // Update an existing farm
     @PutMapping("/{id}")
-    public ResponseEntity<FarmDTO> updateFarm(@PathVariable UUID id, @Valid @RequestBody FarmDTO farmDTO) {
+    public ResponseEntity<FarmDTO> updateFarm(@PathVariable UUID id, @Valid @RequestBody FarmVM farmVM) {
+        FarmDTO farmDTO = farmMapper.toDTO(farmVM);
         FarmDTO updatedFarmDTO = farmService.updateFarm(id, farmDTO);
         return ResponseEntity.ok(updatedFarmDTO);
     }
@@ -59,7 +79,8 @@ public class FarmController {
     }
 
     @PostMapping("/{farmId}/fields")
-    public ResponseEntity<FarmDTO> addFieldToFarm(@PathVariable UUID farmId, @Valid @RequestBody FieldDTO fieldDTO) {
+    public ResponseEntity<FarmDTO> addFieldToFarm(@PathVariable UUID farmId, @Valid @RequestBody FieldVM fieldVM) {
+        FieldDTO fieldDTO = fieldMapper.toDTO(fieldVM);
         FarmDTO updatedFarmDTO = farmService.addField(farmId, fieldDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(updatedFarmDTO);
     }

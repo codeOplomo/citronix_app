@@ -11,6 +11,7 @@ import org.anas.citronix.service.dto.mapper.FieldMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -65,4 +66,8 @@ public class FieldServiceImpl implements FieldService {
         return createdField;
     }
 
+    @Override
+    public void saveAll(List<Field> fields) {
+        fieldRepository.saveAll(fields);
+    }
 }

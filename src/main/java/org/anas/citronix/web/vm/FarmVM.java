@@ -1,24 +1,27 @@
-package org.anas.citronix.service.dto;
+package org.anas.citronix.web.vm;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 
-import java.time.LocalDate;
 import java.util.List;
 
-public class FarmDTO {
+public class FarmVM {
 
+    @NotBlank
+    @NotNull
     private String name;
 
+    @NotBlank
+    @NotNull
     private String location;
 
+    @NotNull
+    @Positive
     private double area;
 
-    private LocalDate creationDate;
+    private List<FieldVM> fields;
 
-    private List<FieldDTO> fields;
-
-    // Getters and Setters
     public String getName() {
         return name;
     }
@@ -43,20 +46,11 @@ public class FarmDTO {
         this.area = area;
     }
 
-    public LocalDate getCreationDate() {
-        return creationDate;
-    }
-
-    public void setCreationDate(LocalDate creationDate) {
-        this.creationDate = creationDate;
-    }
-
-    public List<FieldDTO> getFields() {
+    public List<FieldVM> getFields() {
         return fields;
     }
 
-    public void setFields(List<FieldDTO> fields) {
+    public void setFields(List<FieldVM> fields) {
         this.fields = fields;
     }
 }
-

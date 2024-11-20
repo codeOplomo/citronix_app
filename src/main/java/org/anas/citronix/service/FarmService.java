@@ -3,6 +3,7 @@ package org.anas.citronix.service;
 import org.anas.citronix.domain.Farm;
 import org.anas.citronix.service.dto.FarmDTO;
 import org.anas.citronix.service.dto.FieldDTO;
+import org.anas.citronix.web.vm.FieldVM;
 
 import java.util.List;
 import java.util.UUID;
