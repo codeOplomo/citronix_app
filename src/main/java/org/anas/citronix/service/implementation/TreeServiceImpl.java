@@ -27,6 +27,10 @@ public class TreeServiceImpl implements TreeService {
         this.treeMapper = treeMapper;
         this.treeRepository = treeRepository;
     }
+    @Override
+    public Optional<Tree> findById(UUID treeId) {
+        return treeRepository.findById(treeId);
+    }
 
     public TreeDTO addTreeToField(TreeDTO treeDTO) {
         UUID fieldId = treeDTO.getFieldId();
@@ -55,13 +59,12 @@ public class TreeServiceImpl implements TreeService {
     }
 
     @Override
-    public Optional<Tree> findById(UUID treeId) {
-        return treeRepository.findById(treeId);
-    }
-
-    @Override
     public List<Tree> findAllByField(Field field) {
         return treeRepository.findAllByField(field);
     }
 
+    @Override
+    public List<Tree> findAllByIds(List<UUID> treeIds) {
+        return treeRepository.findAllById(treeIds);
+    }
 }

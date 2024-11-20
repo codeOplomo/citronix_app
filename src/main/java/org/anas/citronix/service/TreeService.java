@@ -14,4 +14,6 @@ public interface TreeService {
     Optional<Tree> findById(UUID treeId);
 
     List<Tree> findAllByField(Field field);
+
+    List<Tree> findAllByIds(List<UUID> treeIds);
 }
