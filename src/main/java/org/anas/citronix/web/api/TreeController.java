@@ -19,4 +19,10 @@ public class TreeController {
         this.treeService = treeService;
     }
 
+    @PostMapping("/assign-tree")
+    public ResponseEntity<TreeDTO> addTreeToField(@RequestBody @Valid TreeDTO treeDTO) {
+        TreeDTO savedTree = treeService.addTreeToField(treeDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body(savedTree);
+    }
+
 }
