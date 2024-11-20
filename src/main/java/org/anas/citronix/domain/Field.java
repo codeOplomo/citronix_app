@@ -2,6 +2,8 @@ package org.anas.citronix.domain;
 
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -16,6 +18,12 @@ public class Field {
 
     @ManyToOne(optional = false)
     private Farm farm;
+
+    @OneToMany(mappedBy = "field")
+    private List<Harvest> harvests = new ArrayList<>();
+
+    @OneToMany(mappedBy = "field")
+    private List<Tree> trees = new ArrayList<>();
 
     // Helper Method
     public boolean isTreeDensityValid(int numberOfTrees) {
@@ -44,5 +52,21 @@ public class Field {
 
     public void setFarm(Farm farm) {
         this.farm = farm;
+    }
+
+    public List<Harvest> getHarvests() {
+        return harvests;
+    }
+
+    public void setHarvests(List<Harvest> harvests) {
+        this.harvests = harvests;
+    }
+
+    public List<Tree> getTrees() {
+        return trees;
+    }
+
+    public void setTrees(List<Tree> trees) {
+        this.trees = trees;
     }
 }

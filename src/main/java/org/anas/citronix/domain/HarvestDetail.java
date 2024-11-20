@@ -5,7 +5,7 @@ import jakarta.persistence.*;
 import java.util.UUID;
 
 @Entity
-@Table(name = "harvest_details")
+@Table(name = "harvest_detail")
 public class HarvestDetail {
     @Id
     @GeneratedValue
@@ -17,8 +17,10 @@ public class HarvestDetail {
     @ManyToOne(optional = false)
     private Tree tree;
 
-    @ManyToOne(optional = false)
+    @ManyToOne
+    @JoinColumn(name = "harvest_id", nullable = true)
     private Harvest harvest;
+
 
     public HarvestDetail() {
     }
@@ -55,3 +57,11 @@ public class HarvestDetail {
         this.harvest = harvest;
     }
 }
+
+/*
+Post : Harvest {Feild_id  season, date}
+
+=> field_id => field => get trees => foreach =>
+        -get Quentity by season => add to HarvestDetail {harvest_id, tree_id, quentity}
+        -calc total quentity => add to Harvest {totalQuentity}
+ */

@@ -11,6 +11,8 @@ import org.anas.citronix.service.dto.TreeDTO;
 import org.anas.citronix.service.dto.mapper.TreeMapper;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -51,4 +53,15 @@ public class TreeServiceImpl implements TreeService {
             throw new TreeDensityExceededException("This field has reached the maximum tree density of " + maxDensity + " trees.");
         }
     }
+
+    @Override
+    public Optional<Tree> findById(UUID treeId) {
+        return treeRepository.findById(treeId);
+    }
+
+    @Override
+    public List<Tree> findAllByField(Field field) {
+        return treeRepository.findAllByField(field);
+    }
+
 }

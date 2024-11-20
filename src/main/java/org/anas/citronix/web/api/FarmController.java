@@ -60,7 +60,7 @@ public class FarmController {
 
     @PostMapping("/{farmId}/fields")
     public ResponseEntity<FarmDTO> addFieldToFarm(@PathVariable UUID farmId, @Valid @RequestBody FieldDTO fieldDTO) {
-        FarmDTO updatedFarmDTO = farmService.addFieldToFarm(farmId, fieldDTO);
+        FarmDTO updatedFarmDTO = farmService.addField(farmId, fieldDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(updatedFarmDTO);
     }
 }

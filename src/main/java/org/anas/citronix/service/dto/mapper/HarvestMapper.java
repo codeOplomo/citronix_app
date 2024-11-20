@@ -15,3 +15,4 @@ public interface HarvestMapper {
     HarvestDetail toEntity(HarvestDetailDTO harvestDetailDTO);
     HarvestDetailDTO toDTO(HarvestDetail harvestDetail);
 }
+

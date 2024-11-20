@@ -101,7 +101,7 @@ public class FarmServiceImpl implements FarmService {
     }
 
     @Override
-    public FarmDTO addFieldToFarm(UUID farmId, FieldDTO fieldDTO) {
+    public FarmDTO addField(UUID farmId, FieldDTO fieldDTO) {
         Farm farm = farmRepository.findById(farmId)
                 .orElseThrow(() -> new FarmNotFoundException("Farm with ID " + farmId + " not found"));
 

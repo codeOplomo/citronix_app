@@ -19,6 +19,6 @@ public interface FarmService {
 
     List<FarmDTO> searchFarms(String name, String location);
 
-    FarmDTO addFieldToFarm(UUID farmId, FieldDTO fieldDTO);
+    FarmDTO addField(UUID farmId, FieldDTO fieldDTO);
 }
 
