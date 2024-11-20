@@ -9,10 +9,17 @@ import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring")
 public interface HarvestMapper {
+
+    @Mapping(source = "field.id", target = "fieldId")
+    HarvestDTO toDTO(Harvest harvest);
+
+    @Mapping(source = "tree.id", target = "treeId")
+    HarvestDetailDTO toDTO(HarvestDetail harvestDetail);
+
     @Mapping(target = "id", ignore = true)
     Harvest toEntity(HarvestDTO harvestDTO);
-    HarvestDTO toDTO(Harvest harvest);
+
     HarvestDetail toEntity(HarvestDetailDTO harvestDetailDTO);
-    HarvestDetailDTO toDTO(HarvestDetail harvestDetail);
 }
+
 
