@@ -8,6 +8,10 @@ import org.anas.citronix.service.dto.mapper.FarmMapper;
 import org.anas.citronix.service.dto.mapper.FieldMapper;
 import org.anas.citronix.web.vm.FarmVM;
 import org.anas.citronix.web.vm.FieldVM;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -34,7 +38,6 @@ public class FarmController {
     public ResponseEntity<FarmDTO> createFarm(@Valid @RequestBody FarmVM farmVM) {
         FarmDTO farmDTO = farmMapper.toDTO(farmVM);
 
-        // Handle cases where fields are provided
         if (farmVM.getFields() != null && !farmVM.getFields().isEmpty()) {
             for (FieldVM fieldVM : farmVM.getFields()) {
                 FieldDTO fieldDTO = fieldMapper.toDTO(fieldVM);
@@ -44,6 +47,13 @@ public class FarmController {
 
         FarmDTO createdFarmDTO = farmService.createFarm(farmDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdFarmDTO);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteFarm(@PathVariable UUID id) {
+        farmService.deleteFarm(id);
+        String message = "Farm with ID " + id + " has been successfully deleted.";
+        return ResponseEntity.ok(message);
     }
 
 
@@ -64,10 +74,20 @@ public class FarmController {
 
     // Get all farms (optional pagination)
     @GetMapping
-    public ResponseEntity<List<FarmDTO>> getAllFarms() {
-        List<FarmDTO> farms = farmService.getAllFarms();
-        return ResponseEntity.ok(farms);
+    public ResponseEntity<Page<FarmDTO>> getAllFarms(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "name") String sortBy,
+            @RequestParam(defaultValue = "asc") String sortDirection) {
+
+        Pageable pageable = PageRequest.of(page, size,
+                sortDirection.equalsIgnoreCase("asc") ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending());
+
+        Page<FarmDTO> farmPage = farmService.getAllFarms(pageable);
+
+        return ResponseEntity.ok(farmPage);
     }
+
 
     @GetMapping("/search")
     public ResponseEntity<List<FarmDTO>> searchFarms(
@@ -81,7 +101,8 @@ public class FarmController {
     @PostMapping("/{farmId}/fields")
     public ResponseEntity<FarmDTO> addFieldToFarm(@PathVariable UUID farmId, @Valid @RequestBody FieldVM fieldVM) {
         FieldDTO fieldDTO = fieldMapper.toDTO(fieldVM);
-        FarmDTO updatedFarmDTO = farmService.addField(farmId, fieldDTO);
+        fieldDTO.setFarmId(farmId);
+        FarmDTO updatedFarmDTO = farmService.addField(fieldDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(updatedFarmDTO);
     }
 }

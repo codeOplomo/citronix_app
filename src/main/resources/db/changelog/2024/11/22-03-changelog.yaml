@@ -1,0 +1,12 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1731830927
+      author: epshiro
+      changes:
+        - addColumn:
+            tableName: fields
+            columns:
+              - column:
+                  name: removed
+                  type: BOOLEAN
+                  defaultValueBoolean: false

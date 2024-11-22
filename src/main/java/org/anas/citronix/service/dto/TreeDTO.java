@@ -1,22 +1,14 @@
 package org.anas.citronix.service.dto;
 
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.PastOrPresent;
 
 import java.time.LocalDate;
 import java.util.UUID;
 
 public class TreeDTO {
     private UUID id;
-
-    @NotNull(message = "Planting date is required")
-    @PastOrPresent(message = "Planting date must be in the past or present")
     private LocalDate plantingDate;
-
     private int age;
     private double productivity;
-
-    @NotNull(message = "Field ID is required")
     private UUID fieldId;
 
     // Getters and Setters

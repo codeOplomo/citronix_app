@@ -83,5 +83,10 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleHarvestNotFoundException(HarvestNotFoundException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
     }
+
+    @ExceptionHandler(InsufficientFarmSpaceException.class)
+    public ResponseEntity<String> handleInsufficientFarmSpaceException(InsufficientFarmSpaceException ex) {
+        return ResponseEntity.badRequest().body(ex.getMessage());
+    }
 }
 

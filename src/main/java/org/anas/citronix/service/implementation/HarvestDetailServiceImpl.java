@@ -30,6 +30,19 @@ public class HarvestDetailServiceImpl implements HarvestDetailService {
         harvestDetailRepository.saveAll(harvestDetails);
     }
 
+    @Override
+    public void deleteHarvestDetail(UUID harvestDetailId) {
+        HarvestDetail harvestDetail = harvestDetailRepository.findById(harvestDetailId)
+                .orElseThrow(() -> new HarvestNotFoundException("HarvestDetail with ID " + harvestDetailId + " not found"));
+
+        if (harvestDetail.getTree() != null) {
+            harvestDetail.setTree(null);
+        }
+
+        // Delete the HarvestDetail
+        harvestDetailRepository.delete(harvestDetail);
+    }
+
 //    @Override
 //    public HarvestDetailDTO addHarvestDetail(UUID harvestId, HarvestDetailDTO harvestDetailDTO) {
 //        // Retrieve the harvest and tree entities using the provided IDs

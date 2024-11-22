@@ -1,7 +1,6 @@
 package org.anas.citronix.service.implementation;
 
 import jakarta.persistence.EntityManager;
-import jakarta.transaction.Transactional;
 import org.anas.citronix.domain.Farm;
 import org.anas.citronix.domain.Field;
 import org.anas.citronix.exceptions.FarmMaximumFieldsException;
@@ -14,6 +13,10 @@ import org.anas.citronix.service.dto.FarmDTO;
 import org.anas.citronix.service.dto.FieldDTO;
 import org.anas.citronix.service.dto.mapper.FarmMapper;
 import org.anas.citronix.service.dto.mapper.FieldMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -30,6 +33,8 @@ public class FarmServiceImpl implements FarmService {
     private final EntityManager entityManager;
     private final FieldService fieldService;
 
+    @Autowired
+    @Lazy
     public FarmServiceImpl(FarmRepository farmRepository, FarmMapper farmMapper, FieldService fieldService, EntityManager entityManager, FieldMapper fieldMapper) {
         this.farmRepository = farmRepository;
         this.farmMapper = farmMapper;
@@ -38,13 +43,28 @@ public class FarmServiceImpl implements FarmService {
         this.entityManager = entityManager;
     }
 
+    @Override
+    public void deleteFarm(UUID id) {
+        Farm farm = farmRepository.findById(id)
+                .orElseThrow(() -> new FarmNotFoundException("Farm with ID " + id + " not found"));
+
+        List<Field> fields = farm.getFields();
+        if (fields != null && !fields.isEmpty()) {
+            for (Field field : fields) {
+                field.setFarm(null);
+                fieldService.deleteField(field.getId());
+            }
+        }
+
+        // Now delete the farm
+        farmRepository.delete(farm);
+    }
 
     @Override
-    public FarmDTO addField(UUID farmId, FieldDTO fieldDTO) {
-        Farm farm = farmRepository.findById(farmId)
-                .orElseThrow(() -> new FarmNotFoundException("Farm with ID " + farmId + " not found"));
+    public FarmDTO addField(FieldDTO fieldDTO) {
+        Farm farm = farmRepository.findById(fieldDTO.getFarmId())
+                .orElseThrow(() -> new FarmNotFoundException("Farm with ID " + fieldDTO.getFarmId() + " not found"));
 
-        // Check farm constraints before adding field
         if (farm.getFields().size() >= 10) {
             throw new FarmMaximumFieldsException("A farm cannot have more than 10 fields");
         }
@@ -67,50 +87,37 @@ public class FarmServiceImpl implements FarmService {
             throw new NullFarmException("Farm cannot be null");
         }
 
-        // Convert DTO to entity
         Farm farm = farmMapper.toEntity(farmDTO);
         farm.setCreationDate(java.time.LocalDate.now());
 
-        // Save farm first to generate an ID
         Farm savedFarm = farmRepository.save(farm);
 
-        // Handle provided fields
         if (farmDTO.getFields() != null && !farmDTO.getFields().isEmpty()) {
             List<Field> fields = new ArrayList<>();
             double currentFieldAreaSum = 0.0;
 
-            // Iterate over fields to validate and prepare them
             for (FieldDTO fieldDTO : farmDTO.getFields()) {
-                // Check if this field is already associated with a farm
-                if (fieldDTO.getFarmId() == null) { // This field isn't yet assigned
+                if (fieldDTO.getFarmId() == null) {
                     currentFieldAreaSum += fieldDTO.getArea();
                     if (!farm.isValidArea(currentFieldAreaSum)) {
                         throw new FarmMaximumFieldsException("The sum of the field areas exceeds the farm's total area");
                     }
 
-                    // Convert fieldDTO to entity and set farm reference
                     Field field = fieldMapper.toEntity(fieldDTO);
-                    field.setFarm(savedFarm); // Set the farm relationship
+                    field.setFarm(savedFarm);
                     fields.add(field);
                 }
             }
 
-            // Save the newly added fields
             if (!fields.isEmpty()) {
                 fieldService.saveAll(fields);
             }
 
-            // Update fields in the farm entity after saving
             savedFarm.setFields(fields);
         }
 
-        // Return the farm as a DTO
         return farmMapper.toDTO(savedFarm);
     }
-
-
-
-
 
     @Override
     public FarmDTO updateFarm(UUID id, FarmDTO farmDTO) {
@@ -146,13 +153,12 @@ public class FarmServiceImpl implements FarmService {
     }
 
     @Override
-    public List<FarmDTO> getAllFarms() {
-        List<Farm> farms = farmRepository.findAll();
+    public Page<FarmDTO> getAllFarms(Pageable pageable) {
+        Page<Farm> farmPage = farmRepository.findAll(pageable);
 
-        return farms.stream()
-                .map(farmMapper::toDTO)
-                .collect(Collectors.toList());
+        return farmPage.map(farmMapper::toDTO);
     }
+
 
     @Override
     public List<FarmDTO> searchFarms(String name, String location) {
@@ -165,6 +171,10 @@ public class FarmServiceImpl implements FarmService {
         return farms.stream().map(farmMapper::toDTO).collect(Collectors.toList());
     }
 
-
+    @Override
+    public Farm findFarmById(UUID id) {
+        return farmRepository.findById(id)
+                .orElseThrow(() -> new FarmNotFoundException("Farm with ID " + id + " not found"));
+    }
 }
 

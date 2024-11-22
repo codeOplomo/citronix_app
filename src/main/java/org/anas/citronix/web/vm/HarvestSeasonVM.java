@@ -2,7 +2,7 @@ package org.anas.citronix.web.vm;
 
 import org.anas.citronix.domain.enums.Season;
 
-public class HarvestSeasonRequest {
+public class HarvestSeasonVM {
     private Season season;
 
     // Getters and Setters

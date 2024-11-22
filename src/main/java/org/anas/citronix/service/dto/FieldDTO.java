@@ -8,6 +8,15 @@ public class FieldDTO {
     // Assuming FieldDTO has a farmId property
     private UUID farmId;
 
+
+    public FieldDTO() {
+    }
+
+    public FieldDTO(double area, UUID farmId) {
+        this.area = area;
+        this.farmId = farmId;
+    }
+
     // Getters and Setters
     public double getArea() {
         return area;

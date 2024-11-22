@@ -16,14 +16,23 @@ public class Field {
     @Column(nullable = false)
     private double area;
 
-    @ManyToOne(optional = false)
+    @ManyToOne(optional = true)
     private Farm farm;
 
     @OneToMany(mappedBy = "field")
-    private List<Harvest> harvests = new ArrayList<>();
-
-    @OneToMany(mappedBy = "field")
     private List<Tree> trees = new ArrayList<>();
+
+    @Column(nullable = false)
+    private boolean removed = false;
+
+
+    public boolean isRemoved() {
+        return removed;
+    }
+
+    public void setRemoved(boolean removed) {
+        this.removed = removed;
+    }
 
     // Helper Method
     public boolean isTreeDensityValid(int numberOfTrees) {
@@ -52,14 +61,6 @@ public class Field {
 
     public void setFarm(Farm farm) {
         this.farm = farm;
-    }
-
-    public List<Harvest> getHarvests() {
-        return harvests;
-    }
-
-    public void setHarvests(List<Harvest> harvests) {
-        this.harvests = harvests;
     }
 
     public List<Tree> getTrees() {

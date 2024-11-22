@@ -17,8 +17,20 @@ public class Tree {
     @Column(nullable = false)
     private LocalDate plantingDate;
 
-    @ManyToOne(optional = false)
+    @ManyToOne(optional = false, fetch = FetchType.EAGER)
+    @JoinColumn(name = "field_id", nullable = false)
     private Field field;
+
+    @Column(nullable = false)
+    private boolean removed = false;
+
+    public boolean isRemoved() {
+        return removed;
+    }
+
+    public void setRemoved(boolean removed) {
+        this.removed = removed;
+    }
 
     // Helper Methods
     public int calculateAge() {

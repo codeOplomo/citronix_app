@@ -1,0 +1,22 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1732232646
+      author: epshiro
+      changes:
+        # Add the field_id column to harvest_detail
+        - addColumn:
+            tableName: harvest_detail
+            columns:
+              - column:
+                  name: field_id
+                  type: UUID
+                  constraints:
+                    nullable: true
+
+        # Add the foreign key constraint for field_id
+        - addForeignKeyConstraint:
+            baseTableName: harvest_detail
+            baseColumnNames: field_id
+            referencedTableName: fields
+            referencedColumnNames: id
+            constraintName: fk_harvest_detail_field

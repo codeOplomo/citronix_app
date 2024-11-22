@@ -1,0 +1,12 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1732233948
+      author: epshiro
+      changes:
+        - addColumn:
+            tableName: trees
+            columns:
+              - column:
+                  name: removed
+                  type: BOOLEAN
+                  defaultValueBoolean: false

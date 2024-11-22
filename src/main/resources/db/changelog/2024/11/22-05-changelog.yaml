@@ -1,0 +1,11 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1732234423
+      author: epshiro
+      changes:
+        - dropForeignKeyConstraint:
+            baseTableName: harvest_detail
+            constraintName: fk_harvest_detail_field
+        - dropColumn:
+            tableName: harvest_detail
+            columnName: field_id
