@@ -17,6 +17,8 @@ public interface HarvestService {
 
     Harvest createHarvest(UUID fieldId, LocalDate harvestDate, List<UUID> treeIds);
 
+    Harvest save(Harvest harvest);
+
     List<HarvestDTO> getHarvestBySeason(Season season);
 
     Optional<Harvest> findById(UUID harvestId);

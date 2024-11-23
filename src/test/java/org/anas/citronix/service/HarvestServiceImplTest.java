@@ -4,6 +4,7 @@ import org.anas.citronix.domain.Field;
 import org.anas.citronix.domain.Harvest;
 import org.anas.citronix.domain.Tree;
 import org.anas.citronix.domain.enums.Season;
+import org.anas.citronix.exceptions.FieldHasNoTreesException;
 import org.anas.citronix.exceptions.FieldNotFoundException;
 import org.anas.citronix.exceptions.HarvestAlreadyExistsException;
 import org.anas.citronix.repository.HarvestRepository;
@@ -36,7 +37,7 @@ public class HarvestServiceImplTest {
     @Mock
     private HarvestUtils harvestUtils;
     @Mock
-    private HarvestDetailService harvestDetailService;  // Add this mock for HarvestDetailService
+    private HarvestDetailService harvestDetailService;
 
     @InjectMocks
     private HarvestServiceImpl harvestService;
@@ -116,6 +117,22 @@ public class HarvestServiceImplTest {
         verify(harvestDetailService, never()).saveAll(anyList());
     }
 
+    @Test
+    void testCreateHarvest_TreesNotFound_ShouldThrowException() {
+        Field field = mock(Field.class);
+        LocalDate harvestDate = LocalDate.of(2024, 5, 15);
+
+        when(fieldService.findById(eq(fieldId))).thenReturn(java.util.Optional.of(field));
+        when(treeService.findAllByField(eq(field))).thenReturn(Collections.emptyList());
+        when(harvestUtils.validateAndFetchTrees(eq(fieldId), eq(treeIds))).thenReturn(Collections.emptyList());
+
+        assertThrows(FieldHasNoTreesException.class, () -> {
+            harvestService.createHarvest(fieldId, harvestDate, treeIds);
+        });
+
+        verify(harvestRepository, never()).save(any(Harvest.class));
+        verify(harvestDetailService, never()).saveAll(anyList());
+    }
 }
 
 

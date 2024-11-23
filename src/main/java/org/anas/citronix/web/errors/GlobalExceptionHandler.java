@@ -88,5 +88,20 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleInsufficientFarmSpaceException(InsufficientFarmSpaceException ex) {
         return ResponseEntity.badRequest().body(ex.getMessage());
     }
+
+    @ExceptionHandler(SaleAlreadyExistsException.class)
+    public ResponseEntity<String> handleSaleAlreadyExistsException(SaleAlreadyExistsException ex) {
+        return ResponseEntity.badRequest().body(ex.getMessage());
+    }
+
+    @ExceptionHandler(FieldHasNoTreesException.class)
+    public ResponseEntity<String> handleFieldHasNoTreesException(FieldHasNoTreesException ex) {
+        return ResponseEntity.badRequest().body(ex.getMessage());
+    }
+
+    @ExceptionHandler(NonProductiveHarvestException.class)
+    public ResponseEntity<String> handleNonProductiveHarvestException(NonProductiveHarvestException ex) {
+        return ResponseEntity.badRequest().body(ex.getMessage());
+    }
 }
 

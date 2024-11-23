@@ -1,6 +1,7 @@
 package org.anas.citronix.domain;
 
 import jakarta.persistence.*;
+import org.anas.citronix.domain.enums.HarvestStatus;
 import org.anas.citronix.domain.enums.Season;
 
 import java.time.LocalDate;
@@ -24,6 +25,10 @@ public class Harvest {
 
     @Column(nullable = false)
     private double totalQuantity;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private HarvestStatus status = HarvestStatus.AVAILABLE;
 
     @OneToMany(mappedBy = "harvest")
     private List<HarvestDetail> details = new ArrayList<>();
@@ -102,5 +107,13 @@ public class Harvest {
 
     public void setField(Field field) {
         this.field = field;
+    }
+
+    public HarvestStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(HarvestStatus status) {
+        this.status = status;
     }
 }

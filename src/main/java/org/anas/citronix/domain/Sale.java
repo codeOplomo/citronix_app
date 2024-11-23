@@ -12,7 +12,7 @@ public class Sale {
     @GeneratedValue
     private UUID id;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private java.time.LocalDate date;
 
     @Column(nullable = false)
@@ -21,7 +21,7 @@ public class Sale {
     @Column(nullable = false)
     private String client;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private double revenue;
 
     @ManyToOne(optional = false)

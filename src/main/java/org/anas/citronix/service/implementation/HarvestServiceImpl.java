@@ -3,11 +3,9 @@ package org.anas.citronix.service.implementation;
 import org.anas.citronix.domain.Field;
 import org.anas.citronix.domain.HarvestDetail;
 import org.anas.citronix.domain.Tree;
+import org.anas.citronix.domain.enums.HarvestStatus;
 import org.anas.citronix.domain.enums.Season;
-import org.anas.citronix.exceptions.FieldNotFoundException;
-import org.anas.citronix.exceptions.HarvestAlreadyExistsException;
-import org.anas.citronix.exceptions.HarvestNotFoundException;
-import org.anas.citronix.exceptions.TreeNotFoundException;
+import org.anas.citronix.exceptions.*;
 import org.anas.citronix.repository.HarvestRepository;
 import org.anas.citronix.service.FieldService;
 import org.anas.citronix.service.HarvestDetailService;
@@ -87,7 +85,11 @@ public class HarvestServiceImpl implements HarvestService {
         harvest.setDetails(details);
         harvest.setTotalQuantity(totalQuantity);
 
-        harvest = harvestRepository.save(harvest);
+        if (totalQuantity == 0) {
+            harvest.setStatus(HarvestStatus.UNPRODUCTIVE);
+        }
+
+        harvest = save(harvest);
         harvestDetailService.saveAll(details);
 
         return harvest;
@@ -98,22 +100,29 @@ public class HarvestServiceImpl implements HarvestService {
 
         Field field = fieldService.findById(fieldId)
                 .orElseThrow(() -> new FieldNotFoundException("Field not found"));
-        // Check if field exists and validate harvest season
+
         Field validfield = validateFieldAndSeason(field, harvestDate);
 
-        // Fetch and validate trees
         List<Tree> trees = (treeIds == null || treeIds.isEmpty())
                 ? treeService.findAllByField(validfield)
                 : harvestUtils.validateAndFetchTrees(fieldId, treeIds);
 
-        System.out.println("Trees: " + trees.toString());
-        // Create and save harvest
+        if (trees.isEmpty()) {
+            throw new FieldHasNoTreesException("This field might not have any trees for the harvest.");
+        }
+
         return createAndSaveHarvest(validfield, harvestDate, trees);
     }
+
 
     @Override
     public Harvest createHarvest(UUID fieldId, LocalDate harvestDate) {
         return createHarvest(fieldId, harvestDate, null);
+    }
+
+    @Override
+    public Harvest save(Harvest harvest) {
+        return harvestRepository.save(harvest);
     }
 
     @Override
